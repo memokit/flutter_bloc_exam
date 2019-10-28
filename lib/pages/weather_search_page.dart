@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hello_bloc/blocs/todo/todo.dart';
+import 'package:hello_bloc/blocs/todo/todo_bloc.dart';
 import 'package:hello_bloc/blocs/weather/weather.dart';
 import 'package:hello_bloc/models/weather.dart';
+import 'package:hello_bloc/pages/todo_page.dart';
 import 'package:hello_bloc/pages/weather_detail_page.dart';
 
 class WeatherSearchPage extends StatelessWidget {
@@ -12,33 +15,56 @@ class WeatherSearchPage extends StatelessWidget {
         title: Text("Weather Search"),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        alignment: Alignment.center,
-        child: BlocListener<WeatherBloc, WeatherState>(
-          listener: (context, state) {
-            if (state is WeatherError) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                ),
-              );
-            }
-          },
-          child: BlocBuilder<WeatherBloc, WeatherState>(
-            builder: (context, state) {
-              if (state is WeatherInitial) {
-                return buildInitialInput();
-              } else if (state is WeatherLoading) {
-                return buildLoading();
-              } else if (state is WeatherLoaded) {
-                return buildColumnWithData(context, state.weather);
-              } else if (state is WeatherError) {
-                return buildInitialInput();
-              }
-            },
+          padding: EdgeInsets.symmetric(vertical: 16),
+          alignment: Alignment.center,
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<WeatherBloc, WeatherState>(
+                listener: (context, state) {},
+              ),
+              BlocListener<TodoBloc, TodoState>(
+                listener: (context, state) {},
+              ),
+            ],
+            child: BlocBuilder<WeatherBloc, WeatherState>(
+              builder: (context, state) {
+                if (state is WeatherInitial) {
+                  return buildInitialInput();
+                } else if (state is WeatherLoading) {
+                  return buildLoading();
+                } else if (state is WeatherLoaded) {
+                  return buildColumnWithData(context, state.weather);
+                } else if (state is WeatherError) {
+                  return buildInitialInput();
+                }
+              },
+            ),
+          )
+          // child: BlocListener<WeatherBloc, WeatherState>(
+          //   listener: (context, state) {
+          //     if (state is WeatherError) {
+          //       Scaffold.of(context).showSnackBar(
+          //         SnackBar(
+          //           content: Text(state.message),
+          //         ),
+          //       );
+          //     }
+          //   },
+          //   child: BlocBuilder<WeatherBloc, WeatherState>(
+          //     builder: (context, state) {
+          //       if (state is WeatherInitial) {
+          //         return buildInitialInput();
+          //       } else if (state is WeatherLoading) {
+          //         return buildLoading();
+          //       } else if (state is WeatherLoaded) {
+          //         return buildColumnWithData(context, state.weather);
+          //       } else if (state is WeatherError) {
+          //         return buildInitialInput();
+          //       }
+          //     },
+          //   ),
+          // ),
           ),
-        ),
-      ),
     );
   }
 
@@ -81,6 +107,20 @@ class WeatherSearchPage extends StatelessWidget {
                   child: WeatherDetailPage(
                     masterWeather: weather,
                   ),
+                ),
+              ),
+            );
+          },
+        ),
+        RaisedButton(
+          child: Text('Todo'),
+          color: Colors.lightBlue[100],
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: BlocProvider.of<TodoBloc>(context),
+                  child: TodoPage(),
                 ),
               ),
             );
