@@ -3,7 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hello_bloc/blocs/todo/todo.dart';
 import 'package:hello_bloc/models/todo.dart';
 
-class TodoPage extends StatelessWidget {
+class TodoPage extends StatefulWidget {
+  @override
+  _TodoPageState createState() => _TodoPageState();
+}
+
+class _TodoPageState extends State<TodoPage> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    BlocProvider.of<TodoBloc>(context)
+      ..add(GetDetailedTodo("ลูฟี่"));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
